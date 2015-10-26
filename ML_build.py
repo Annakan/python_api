@@ -19,10 +19,10 @@ def generate_forests(db_name, host_list, forest_per_host, replication_factor):
 
     data_forests = OrderedDict()
     forest_replicas_flat = []
-    for index, host in enumerate(host_list):
+    for host in host_list:
         data_forests[host]=[]
-        for findex in range(1,forest_per_host+1):
-            forest_name = "{}-{}F{:02d}".format(db_name,host, findex)
+        for i in range(1,forest_per_host+1):
+            forest_name = "{}-{}F{:02d}".format(db_name,host, i)
             data_forests[host].append(forest_name)
             for replica_index in range(1,replication_factor+1):
                 replica_name = "{}-{}{:02d}".format(forest_name,"Re", replica_index)
@@ -30,16 +30,18 @@ def generate_forests(db_name, host_list, forest_per_host, replication_factor):
     stride = forest_per_host*replication_factor
     print("forest_replicas_flat", forest_replicas_flat)
     print("stride", stride)
-    forest_replicas_rotated = rotate(forest_replicas_flat, stride)
+    replicas_ring = rotate(forest_replicas_flat, stride)
     forest_replicas = OrderedDict()
-    for index, host in enumerate(host_list):
-        print("forest_replicas_rotated [{}] : {}".format(index,forest_replicas_rotated))
-        replicas=[]
-        for j in range(forest_per_host):
-            pos = j*stride
-            replicas.extend(forest_replicas_rotated[pos:pos+replication_factor])
-        forest_replicas[host] = replicas
-        forest_replicas_rotated = rotate(forest_replicas_rotated, stride)
+    for repl_count in range(replication_factor):
+        for host_num, host in enumerate(host_list):
+            print("replicas_ring [{}] : {}".format(host_num,replicas_ring))
+            replicas=forest_replicas[host] if host in forest_replicas else []
+            for j in range(forest_per_host):
+                pos = j*stride
+                replicas.extend(replicas_ring[pos:pos+1])
+            forest_replicas[host] = replicas
+            replicas_ring = rotate(replicas_ring, stride)
+        replicas_ring = rotate(replicas_ring, replication_factor)
     return  data_forests, forest_replicas_flat, forest_replicas
 
 # def create_database(connection, db_name, host_list, replication_factor, forest_per_host, host_path ):
@@ -69,7 +71,7 @@ if __name__ == '__main__':
 
     forest_list, replica_list, forest_replica_dict =\
         generate_forests("Data", ("host1", "host2", "host3", "host4", "host5"),
-                        replication_factor=2, forest_per_host=3)
+                        replication_factor=2, forest_per_host=1)
 
     print("Data Forests")
     print(forest_list)
