@@ -19,15 +19,13 @@ def generate_forests(db_name, host_list, forest_per_host, replication_factor):
 
     data_forests = OrderedDict()
     forest_replicas_flat = []
-    nb_hosts = len(host_list)
-
     for index, host in enumerate(host_list):
         data_forests[host]=[]
         for findex in range(1,forest_per_host+1):
-            forest_name = "{}-{}-F{:02d}".format(db_name,host, findex)
+            forest_name = "{}-{}F{:02d}".format(db_name,host, findex)
             data_forests[host].append(forest_name)
             for replica_index in range(1,replication_factor+1):
-                replica_name = "{}-{}{:02d}".format(forest_name,"Repl", replica_index)
+                replica_name = "{}-{}{:02d}".format(forest_name,"Re", replica_index)
                 forest_replicas_flat.append(replica_name)
     stride = forest_per_host*replication_factor
     print("forest_replicas_flat", forest_replicas_flat)
@@ -42,12 +40,6 @@ def generate_forests(db_name, host_list, forest_per_host, replication_factor):
             replicas.extend(forest_replicas_rotated[pos:pos+replication_factor])
         forest_replicas[host] = replicas
         forest_replicas_rotated = rotate(forest_replicas_rotated, stride)
-
-
-
-
-    print("forest_replicas_rotated", forest_replicas_rotated)
-
     return  data_forests, forest_replicas_flat, forest_replicas
 
 # def create_database(connection, db_name, host_list, replication_factor, forest_per_host, host_path ):
