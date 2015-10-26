@@ -58,3 +58,5 @@ target/
 
 # Examples cruft
 examples/.mlcp/
+
+.idea/**
