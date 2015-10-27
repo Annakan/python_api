@@ -37,8 +37,8 @@ def generate_forests(db_name, host_list, forest_per_host, replication_factor):
             print("replicas_ring [{}] : {}".format(host_num,replicas_ring))
             replicas=forest_replicas[host] if host in forest_replicas else []
             for j in range(forest_per_host):
-                pos = j*stride
-                replicas.extend(replicas_ring[pos:pos+1])
+                pos = j*stride+repl_count
+                replicas.append(replicas_ring[pos])
             forest_replicas[host] = replicas
             replicas_ring = rotate(replicas_ring, stride)
         replicas_ring = rotate(replicas_ring, replication_factor)
@@ -70,8 +70,8 @@ if __name__ == '__main__':
     #                host_path='')
 
     forest_list, replica_list, forest_replica_dict =\
-        generate_forests("Data", ("host1", "host2", "host3", "host4", "host5"),
-                        replication_factor=2, forest_per_host=1)
+        generate_forests("Data", ("host1", "host2", "host3"), #, "host4", "host5"),
+                        replication_factor=2, forest_per_host=2)
 
     print("Data Forests")
     print(forest_list)
