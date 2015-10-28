@@ -69,28 +69,44 @@ Vagrant.configure(2) do |config|
   #   sudo apt-get install -y apache2
   # SHELL
 
+# common configuration
+
+  config.vm.provision "shell", inline: <<-SHELL
+      source /vagrant/shared/centos7_install/conf.sh
+      rpm -i /vagrant/bin/MarkLogic-8.0-3.2.x86_64.rpm
+  SHELL
+
+# provisionning ML machine
+
+config.vm.define "ML1" do |ml1|
+
   config.vm.provision "shell", inline: <<-SHELL
     sudo yum update
     sudo yum upgrade
     sudo yum groupinstall -y 'Development Tools'
     sudo yum install -y python-devel libffi-devel openssl-devel  wget snappy-devel
-    sudo wget https://bootstrap.pypa.io/get-pip.py
-    sudo python get-pip.py --force-reinstall # --install-option="--install-scripts=/usr/bin"
-    # cf http://stackoverflow.com/questions/29134512/insecureplatformwarning-a-true-sslcontext-object-is-not-available-this-prevent
-    #sudo pip2 install virtualenv, virtualenvwrapper
-  SHELL
-
-   #python 3
-   # project specific config
-  config.vm.provision "shell", inline: <<-SHELL
-    #sudo yum -y install scl-utils
     sudo yum -y install python34
     sudo ln -s /usr/bin/python3.4 /usr/bin/python3
+    sudo wget https://bootstrap.pypa.io/get-pip.py
+    sudo python get-pip.py --force-reinstall # --install-option="--install-scripts=/usr/bin"
     sudo python3 get-pip.py --force-reinstall
+    # cf http://stackoverflow.com/questions/29134512/insecureplatformwarning-a-true-sslcontext-object-is-not-available-this-prevent
+    #sudo pip2 install virtualenv, virtualenvwrapper
+   SHELL
+
+   # project specific config
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo pip3 install requests
+    sudo python3 /vagrant/setup.py develop
   SHELL
+end
 
+config.vm.define "ML2" do |ml2|
 
-config.vm.provision "shell", inline: <<-SHELL
-  sudo pip3 install requests
-SHELL
+end
+
+config.vm.define "ML3" do |ml3|
+
+end
+
 end

@@ -60,3 +60,4 @@ target/
 examples/.mlcp/
 
 .idea/**
+bin/
