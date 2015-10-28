@@ -8,6 +8,10 @@
 from collections import OrderedDict
 from copy import deepcopy
 
+FS_NAME= "{}-{}F{:02d}"
+F_NAME="{}-{}"
+
+
 # create the data base
 
 # create the rest, security, trigger database replicated
@@ -29,11 +33,11 @@ def generate_forests(db_name, host_list, forest_per_host, replication_factor):
         data_forests[host]=[]
         forest_replica_dic[host]=[]
         for i in range(1,forest_per_host+1):
-            forest_name = "{}-{}F{:02d}".format(db_name,host, i) if forest_per_host>1 else "{}-{}".format(db_name,host)
+            forest_name = FS_NAME.format(db_name, host, i) if forest_per_host > 1 else F_NAME.format(db_name, host)
             data_forests[host].append(forest_name)
             for replica_index in range(1,replication_factor+1):
-                replica_name = "{}-{}{:02d}".format(forest_name,"Re", replica_index) if replication_factor>1 else\
-                               "{}-{}".format(forest_name,"Rep")
+                replica_name = "{}{:02d}-{}".format("RE", replica_index, forest_name) if replication_factor>1 else\
+                               "{}-{}".format("RE", forest_name)
                 forest_replicas_flat.append(replica_name)
                 forest_replica_dic[host].append(replica_name)
     stride = forest_per_host*replication_factor
@@ -101,7 +105,7 @@ if __name__ == '__main__':
 
     forest_list, forest_replica_dict =\
         generate_forests("Data", ("host1", "host2", "host3"), # "host4", #, "host5"),
-                        replication_factor=1, forest_per_host=2)
+                        replication_factor=2, forest_per_host=2)
 
 
 
