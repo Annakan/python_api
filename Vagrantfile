@@ -76,7 +76,7 @@ Vagrant.configure(2) do |config|
       rpm -i /vagrant/bin/MarkLogic-8.0-3.2.x86_64.rpm
   SHELL
 
-# provisionning ML machine
+# provisioning ML machine
 
 config.vm.define "ML1" do |ml1|
 
@@ -84,8 +84,7 @@ config.vm.define "ML1" do |ml1|
     sudo yum update
     sudo yum upgrade
     sudo yum groupinstall -y 'Development Tools'
-    sudo yum install -y python-devel libffi-devel openssl-devel  wget snappy-devel
-    sudo yum -y install python34
+    sudo yum install -y python-devel libffi-devel openssl-devel  wget snappy-devel python34
     sudo ln -s /usr/bin/python3.4 /usr/bin/python3
     sudo wget https://bootstrap.pypa.io/get-pip.py
     sudo python get-pip.py --force-reinstall # --install-option="--install-scripts=/usr/bin"
@@ -97,7 +96,8 @@ config.vm.define "ML1" do |ml1|
    # project specific config
   config.vm.provision "shell", inline: <<-SHELL
     sudo pip3 install requests
-    sudo python3 /vagrant/setup.py develop
+    cd /vagrant;
+    sudo python3 setup.py develop
   SHELL
 end
 
