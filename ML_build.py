@@ -2,7 +2,7 @@
 # NB_hosts = 3
 # replication factor = 2
 # forest_per_host = 2 (nb forest to create on each host for the database)
-# host_path path on host to store forest datas
+# host_path path on host to store forest data
 # data_name
 
 from collections import OrderedDict
